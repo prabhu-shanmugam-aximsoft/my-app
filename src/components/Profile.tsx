@@ -54,7 +54,7 @@ export const ProfileEdit: React.FC<{
         enableReinitialize: true,
         onSubmit: async (values, { setSubmitting }) => {
             try {
-                 console.log("formvalue:" + JSON.stringify(values));
+                console.log("formvalue:" + JSON.stringify(values));
                 const response = await apiClient.put('/api/profile', JSON.stringify(values));
                 console.log(response);
 
@@ -110,15 +110,10 @@ export const ProfileEdit: React.FC<{
 
                         <div className="mb-3">
                             <label className="form-label">Role</label>
-                            <input
-                                type="text"
-                                className={`form-control ${formik.touched.role && formik.errors.role ? 'is-invalid' : ''}`}
-                                name="role"
-                                value={formik.values.role}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                disabled={!isAdmin}
-                            />
+                            <select name="role" disabled={!isAdmin} className={`form-select ${formik.touched.role && formik.errors.role ? 'is-invalid' : ''}`} value={formik.values.role} onChange={formik.handleChange} onBlur={formik.handleBlur}>
+                                <option key="admin" value="admin">Admin</option>
+                                <option key="user" value="user">User</option>
+                            </select>
                             {formik.touched.role && formik.errors.role && (
                                 <div className="invalid-feedback">{formik.errors.role}</div>
                             )}

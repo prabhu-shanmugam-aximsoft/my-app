@@ -9,6 +9,7 @@ import UserView from './components/UserView';
 import UserEdit from './components/UserEdit';
 
 import ProfilePage from './pages/ProfilePage';
+import HomePage from './pages/HomePage';
 import ContactPage from './pages/ContactPage';
 import UsersPage from './pages/UsersPage';
 import ContactView from './components/ContactView'
@@ -16,7 +17,7 @@ import { TitleProvider } from './context/TitleProvider';
 
 
 // Example components (usually in separate files)
-const Home = () => <h1>Home Page</h1>
+
 const NotFound = () => <h1>NotFound Page</h1>
 
 function App() {
@@ -27,8 +28,8 @@ function App() {
         <Router>
           <Routes>
             <Route path="/" element={<AppLayout />}>
-              <Route index element={<ProtectedRoute><Home /></ProtectedRoute>} />
-              <Route path="home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+              <Route index element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
+              <Route path="home" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
               <Route path="profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
               
               <Route path="contact" element={<ProtectedRoute><ContactPage /></ProtectedRoute>} />

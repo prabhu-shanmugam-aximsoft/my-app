@@ -42,14 +42,14 @@ export default function UserEdit() {
         onSubmit: async (values, { setSubmitting }) => {
             try {
                 console.log("formvalue:" + JSON.stringify(values));
-                await apiClient.put(`/api/users/${id}`, JSON.stringify(values));       
-                
+                await apiClient.put(`/api/users/${id}`, JSON.stringify(values));
+
                 navigate('/users');
             } catch (err) {
-                
+
                 if (axios.isAxiosError(err)) {
                     if (err?.response) {
-                      
+
                         alert(err?.response?.data?.message);
                     }
                 }
@@ -66,24 +66,37 @@ export default function UserEdit() {
 
     return (
         <div className="container mt-4">
-            <h4>Edit User</h4>
-            <form onSubmit={formik.handleSubmit}>
-                <div className="mb-3">
-                    <input name="name" className="form-control" value={formik.values.name} onChange={formik.handleChange} />
+            <div className="card shadow-sm">
+                <div className="card-body">
+                    <h4>Edit User</h4>
+                    <form onSubmit={formik.handleSubmit}>
+                        <div className="mb-3">
+                            <input name="name" className={`form-control ${formik.touched.name && formik.errors.name ? 'is-invalid' : ''}`} value={formik.values.name} onChange={formik.handleChange} />
+                            {formik.touched.name && formik.errors.name && (
+                                <div className="invalid-feedback">{formik.errors.name}</div>
+                            )}
+                        </div>
+                        <div className="mb-3">
+                            <input name="email" className={`form-control ${formik.touched.email && formik.errors.email ? 'is-invalid' : ''}`} value={formik.values.email} onChange={formik.handleChange} />
+                            {formik.touched.email && formik.errors.email && (
+                                <div className="invalid-feedback">{formik.errors.email}</div>
+                            )}
+                        </div>
+                        <div className="mb-3">
+                            <select name="role" className={`form-select ${formik.touched.role && formik.errors.role ? 'is-invalid' : ''}`} value={formik.values.role} onChange={formik.handleChange}>
+                                <option key="admin" value="admin">Admin</option>
+                                <option key="user" value="user">User</option>
+                            </select>
+                            {formik.touched.role && formik.errors.role && (
+                                <div className="invalid-feedback">{formik.errors.role}</div>
+                            )}
+                        </div>
+                        <button className="btn btn-success" disabled={formik.isSubmitting}>
+                            {formik.isSubmitting ? 'Saving...' : 'Save'}
+                        </button>
+                    </form>
                 </div>
-                <div className="mb-3">
-                    <input name="email" className="form-control" value={formik.values.email} onChange={formik.handleChange} />
-                </div>
-                <div className="mb-3">
-                    <select name="role" className="form-select" value={formik.values.role} onChange={formik.handleChange}>
-                        <option key="admin" value="admin">Admin</option>
-                        <option key="user" value="user">User</option>
-                    </select>
-                </div>
-                <button className="btn btn-success" disabled={formik.isSubmitting}>
-                    {formik.isSubmitting ? 'Saving...' : 'Save'}
-                </button>
-            </form>
-        </div>
+            </div>
+        </div >
     );
 };
