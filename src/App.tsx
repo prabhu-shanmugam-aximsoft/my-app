@@ -3,8 +3,8 @@ import './App.css'
 import { BrowserRouter as Router, Routes, Route } from 'react-router'
 import ProtectedRoute from "./components/ProtectedRoute";
 import AppLayout from "./components/AppLayout";
-import SignIn from './components/SignIn';
-import SignUp from './components/SignUp';
+import SignIn from './pages/SignIn';
+import SignUp from './pages/SignUp';
 import UserView from './components/UserView';
 import UserEdit from './components/UserEdit';
 

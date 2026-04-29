@@ -1,15 +1,11 @@
 import { useEffect, useState } from 'react';
-import {  useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
 import apiClient from "../services/apiClient";
 import { useTitle } from '../context/TitleProvider';
 import { Trash3, Eye } from 'react-bootstrap-icons';
+import { type Contact } from '../types';
 
-interface Contact {
-    id: number;
-    full_name: string;
-    email: string;
-    message: string;
-}
+
 
 export default function ContactPage() {
     const [data, setData] = useState<Contact[]>([]);
@@ -17,11 +13,9 @@ export default function ContactPage() {
 
     const { setTitle } = useTitle();
 
-     const navigate = useNavigate();
+    const navigate = useNavigate();
 
-    useEffect(() => {
-        setTitle("Contact Management");
-    }, [setTitle]);
+    useEffect(() => { setTitle("Contact Management"); }, [setTitle]);
 
     useEffect(() => {
         const fetchMessages = async () => {

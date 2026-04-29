@@ -1,16 +1,11 @@
-// ================= PROFILE VIEW =================
 
 import React from "react";
 import { useFormik } from 'formik';
 import * as Yup from "yup";
 import apiClient from "../services/apiClient";
+import { type UserProfile } from '../types';
+import { Floppy, Pencil, XCircle } from 'react-bootstrap-icons';
 
-interface UserProfile {
-    name: string;
-    email: string;
-    role: string;
-    password: string;
-}
 
 export const ProfileView: React.FC<{ user: UserProfile; onEdit: () => void }> = ({ user, onEdit }) => {
     return (
@@ -23,14 +18,14 @@ export const ProfileView: React.FC<{ user: UserProfile; onEdit: () => void }> = 
                     <p><strong>Role:</strong> {user.role}</p>
 
                     <button className="btn btn-primary" onClick={onEdit}>
-                        Edit Profile
+                        <Pencil size={20} /> Edit Profile
                     </button>
                 </div>
             </div>
         </div>
     );
 };
-// ================= PROFILE EDIT =================
+
 
 
 export const ProfileEdit: React.FC<{
@@ -39,13 +34,13 @@ export const ProfileEdit: React.FC<{
     onCancel: () => void;
 }> = ({ user, onSave, onCancel }) => {
 
-    const currentUserRole = localStorage.getItem('userrole'); // assume stored at login
-    const isAdmin = currentUserRole === 'admin';
 
     const validationSchema = Yup.object({
         name: Yup.string().min(3, 'Minimum 3 characters').required('Name is required'),
         email: Yup.string().email('Invalid email').required('Email is required'),
-        role: Yup.string().required('Role is required'),
+        password: Yup.string()
+            .min(6, "Password must be at least 6 characters")
+            .notRequired(),
     });
 
     const formik = useFormik<UserProfile>({
@@ -55,7 +50,17 @@ export const ProfileEdit: React.FC<{
         onSubmit: async (values, { setSubmitting }) => {
             try {
                 console.log("formvalue:" + JSON.stringify(values));
-                const response = await apiClient.put('/api/profile', JSON.stringify(values));
+
+                const payload: Partial<UserProfile> = {
+                    name: values.name,
+                    email: values.email,
+                };
+
+                if (values.password && values.password.trim() !== "") {
+                    payload.password = values.password;
+                }
+
+                const response = await apiClient.put('/api/profile', JSON.stringify(payload));
                 console.log(response);
 
                 const updated = response.data;
@@ -108,21 +113,26 @@ export const ProfileEdit: React.FC<{
                             )}
                         </div>
 
+
                         <div className="mb-3">
-                            <label className="form-label">Role</label>
-                            <select name="role" disabled={!isAdmin} className={`form-select ${formik.touched.role && formik.errors.role ? 'is-invalid' : ''}`} value={formik.values.role} onChange={formik.handleChange} onBlur={formik.handleBlur}>
-                                <option key="admin" value="admin">Admin</option>
-                                <option key="user" value="user">User</option>
-                            </select>
-                            {formik.touched.role && formik.errors.role && (
-                                <div className="invalid-feedback">{formik.errors.role}</div>
+                            <label className="form-label">Password (Optional)</label>
+                            <input
+                                type="password"
+                                className={`form-control ${formik.touched.password && formik.errors.password ? 'is-invalid' : ''}`}
+                                name="password"
+                                value={formik.values.password}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                            />
+                            {formik.touched.password && formik.errors.password && (
+                                <div className="invalid-feedback">{formik.errors.password}</div>
                             )}
                         </div>
 
                         <div className="d-flex gap-2">
-                            <button type="submit" className="btn btn-success">Save</button>
+                            <button type="submit" className="btn btn-success"><Floppy size={20} /> Save</button>
                             <button type="button" className="btn btn-secondary" onClick={onCancel}>
-                                Cancel
+                                <XCircle size={20} />  Cancel
                             </button>
                         </div>
                     </form>

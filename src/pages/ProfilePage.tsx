@@ -9,22 +9,18 @@ export default function ProfilePage() {
 
     const { setTitle } = useTitle();
 
-    useEffect(() => {
-        setTitle("Profile");
-    }, [setTitle]);
+    useEffect(() => { setTitle("Profile"); }, [setTitle]);
 
     const [user, setUser] = React.useState({
         name: '',
         email: '',
-        role: '',
-        password: ''
+        role: ''        
     });
 
     useEffect(() => {
         const fetchProfile = async () => {
             try {
                 const response = await apiClient.get('/api/profile');
-
                 setUser(response.data);
             } catch (error) {
                 console.error('Failed to fetch profile', error);

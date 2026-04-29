@@ -3,13 +3,7 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import apiClient from "../services/apiClient";
 import axios from 'axios';
-
-interface SignupForm {
-    name: string;
-    email: string;
-    password: string;
-    confirmPassword: string;
-}
+import { type SignupForm } from '../types';
 
 export default function Signup() {
 

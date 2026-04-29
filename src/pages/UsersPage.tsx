@@ -5,7 +5,7 @@ import { type User } from '../types';
 import { useTitle } from '../context/TitleProvider';
 import { useNavigate } from "react-router";
 import axios from 'axios';
-import { Trash3, Pencil,Eye } from 'react-bootstrap-icons';
+import { Trash3, Pencil, Eye } from 'react-bootstrap-icons';
 
 export default function UsersPage() {
     const [users, setUsers] = useState<User[]>([]);
@@ -20,9 +20,7 @@ export default function UsersPage() {
 
     const { setTitle } = useTitle();
 
-    useEffect(() => {
-        setTitle("User Management");
-    }, [setTitle]);
+    useEffect(() => { setTitle("User Management"); }, [setTitle]);
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -74,10 +72,9 @@ export default function UsersPage() {
             setUsers((prev) => prev.filter((u) => u.id !== id));
             setFilteredUsers((prev) => prev.filter((u) => u.id !== id));
         } catch (err) {
-            if (axios.isAxiosError(err)) {
-                // TypeScript now knows this is an AxiosError
-                console.error(err.response?.status); // e.g., 404
-                console.error(err.response?.data);   // Server error body
+            if (axios.isAxiosError(err)) {                
+                console.error(err.response?.status);
+                console.error(err.response?.data); 
                 alert(err?.response?.data?.message);
             } else {
                 console.error('An unexpected error occurred:', err);
@@ -92,7 +89,7 @@ export default function UsersPage() {
         <div className="container mt-4">
             <div className="card shadow-sm">
                 <div className="card-body">
-                    <h4 className="mb-3">Users Management</h4>
+                    <h4 className="mb-3">Users List</h4>
 
                     <div className="row mb-3">
                         <div className="col-md-6">
@@ -129,8 +126,6 @@ export default function UsersPage() {
                                             <h5 className="card-title">{user.name}</h5>
                                             <p className="card-text mb-1"><strong>Email:</strong> {user.email}</p>
                                             <p className="card-text"><strong>Role:</strong> {user.role}</p>
-
-
                                             <div className="d-flex gap-2 mt-3">
                                                 <button className="btn btn-sm btn-info" onClick={() => navigate(`/users/view/${user.id}`)}>  <Eye size={20} /> View</button>
                                                 <button className="btn btn-sm btn-warning" onClick={() => navigate(`/users/edit/${user.id}`)}> <Pencil size={20} />  Edit</button>

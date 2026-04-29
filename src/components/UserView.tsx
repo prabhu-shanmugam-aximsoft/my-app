@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { type User } from '../types';
 import apiClient from "../services/apiClient";
 import { useTitle } from '../context/TitleProvider';
+import { ArrowLeft } from 'react-bootstrap-icons';
 
 export default function UserView() {
     const { id } = useParams();
@@ -14,7 +15,7 @@ export default function UserView() {
     const { setTitle } = useTitle();
 
     useEffect(() => {
-        setTitle("View User");
+        setTitle("User Management");
     }, [setTitle]);
 
 
@@ -39,13 +40,17 @@ export default function UserView() {
 
     return (
         <div className="container mt-4">
-            <button className="btn btn-secondary mb-3" onClick={() => navigate(-1)}>Back</button>
-            <div className="card">
+            <div className="card  shadow-sm ml-4">                
                 <div className="card-body">
-                    <h4>{user.name}</h4>
+                    <h4 className="card-title mb-3">Edit User</h4>
+                    <h5>{user.name}</h5>
                     <p><strong>Email:</strong> {user.email}</p>
                     <p><strong>Role:</strong> {user.role}</p>
+                    <div className="d-flex gap-2 ml-5">
+                        <button className="btn btn-secondary mb-3" onClick={() => navigate(-1)}><ArrowLeft size={20} /> Back</button>
+                    </div>
                 </div>
+
             </div>
         </div>
     );

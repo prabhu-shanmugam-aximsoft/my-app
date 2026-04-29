@@ -3,11 +3,8 @@ import * as Yup from "yup";
 import apiClient from "../services/apiClient";
 import { useState } from "react";
 import { useNavigate } from "react-router";
-
-interface LoginFormValues {
-    email: string;
-    password: string;
-}
+import { type LoginFormValues } from '../types';
+import axios from 'axios';
 
 export default function SignIn() {
     const [apiError, setApiError] = useState<string>("");
@@ -20,18 +17,11 @@ export default function SignIn() {
     };
 
     const validationSchema = Yup.object({
-        email: Yup.string()
-            .email("Invalid email format")
-            .required("Email is required"),
-        password: Yup.string()
-            .min(6, "Minimum 6 characters")
-            .required("Password is required"),
+        email: Yup.string().email("Invalid email format").required("Email is required"),
+        password: Yup.string().min(6, "Minimum 6 characters").required("Password is required"),
     });
 
-    const handleSubmit = async (
-        values: LoginFormValues,
-        { setSubmitting }: any
-    ) => {
+    const handleSubmit = async (values: LoginFormValues, { setSubmitting }: any) => {
         setApiError("");
 
         try {
@@ -51,12 +41,16 @@ export default function SignIn() {
 
             window.location.href = "/home";
 
-        } catch (error: any) {
-            if (error.response) {
-                setApiError(error.response.data.message || "Login failed");
-            } else {
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                if (error?.response) {
+                    setApiError(error.response.data.message || "Login failed");
+                }
+            }
+            else {
                 setApiError("Network error. Try again.");
             }
+
         } finally {
             setSubmitting(false);
         }
@@ -82,40 +76,22 @@ export default function SignIn() {
                                 <Field
                                     type="email"
                                     name="email"
-                                    className={`form-control ${touched.email && errors.email ? "is-invalid" : ""
-                                        }`}
+                                    className={`form-control ${touched.email && errors.email ? "is-invalid" : ""}`}
                                 />
-                                <ErrorMessage
-                                    name="email"
-                                    component="div"
-                                    className="invalid-feedback"
-                                />
+                                <ErrorMessage name="email" component="div" className="invalid-feedback" />
                             </div>
 
                             {/* Password */}
                             <div className="mb-3">
                                 <label className="form-label">Password</label>
-                                <Field
-                                    type="password"
-                                    name="password"
-                                    className={`form-control ${touched.password && errors.password ? "is-invalid" : ""
-                                        }`}
-                                />
-                                <ErrorMessage
-                                    name="password"
-                                    component="div"
-                                    className="invalid-feedback"
-                                />
+                                <Field type="password" name="password" className={`form-control ${touched.password && errors.password ? "is-invalid" : ""}`} />
+                                <ErrorMessage name="password" component="div" className="invalid-feedback" />
                             </div>
 
-                            <button
-                                type="submit"
-                                className="btn btn-primary w-49"
-                                disabled={isSubmitting}
-                            >
+                            <button type="submit" className="btn btn-primary w-49" disabled={isSubmitting}  >
                                 {isSubmitting ? "Logging in..." : "Login"}
                             </button>&nbsp;
-                             <button type="button" className="btn btn-info w-49" onClick={() => navigate(`/signup`)}>SignUp</button>
+                            <button type="button" className="btn btn-info w-49" onClick={() => navigate(`/signup`)}>SignUp</button>
                         </Form>
                     )}
                 </Formik>

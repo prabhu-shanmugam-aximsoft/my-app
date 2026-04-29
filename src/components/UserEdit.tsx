@@ -7,6 +7,7 @@ import { type User } from '../types';
 import apiClient from "../services/apiClient";
 import { useTitle } from '../context/TitleProvider';
 import axios from 'axios';
+import { Floppy, XCircle } from 'react-bootstrap-icons';
 
 export default function UserEdit() {
     const { id } = useParams();
@@ -17,7 +18,7 @@ export default function UserEdit() {
     const { setTitle } = useTitle();
 
     useEffect(() => {
-        setTitle("Edit User");
+        setTitle("User Management");
     }, [setTitle]);
 
 
@@ -71,18 +72,21 @@ export default function UserEdit() {
                     <h4>Edit User</h4>
                     <form onSubmit={formik.handleSubmit}>
                         <div className="mb-3">
+                            <label className="form-label">Name</label>
                             <input name="name" className={`form-control ${formik.touched.name && formik.errors.name ? 'is-invalid' : ''}`} value={formik.values.name} onChange={formik.handleChange} />
                             {formik.touched.name && formik.errors.name && (
                                 <div className="invalid-feedback">{formik.errors.name}</div>
                             )}
                         </div>
                         <div className="mb-3">
+                            <label className="form-label">Email</label>
                             <input name="email" className={`form-control ${formik.touched.email && formik.errors.email ? 'is-invalid' : ''}`} value={formik.values.email} onChange={formik.handleChange} />
                             {formik.touched.email && formik.errors.email && (
                                 <div className="invalid-feedback">{formik.errors.email}</div>
                             )}
                         </div>
                         <div className="mb-3">
+                            <label className="form-label">Role</label>
                             <select name="role" className={`form-select ${formik.touched.role && formik.errors.role ? 'is-invalid' : ''}`} value={formik.values.role} onChange={formik.handleChange}>
                                 <option key="admin" value="admin">Admin</option>
                                 <option key="user" value="user">User</option>
@@ -91,9 +95,12 @@ export default function UserEdit() {
                                 <div className="invalid-feedback">{formik.errors.role}</div>
                             )}
                         </div>
-                        <button className="btn btn-success" disabled={formik.isSubmitting}>
-                            {formik.isSubmitting ? 'Saving...' : 'Save'}
-                        </button>
+                        <div className="d-flex gap-2">
+                            <button className="btn btn-success" disabled={formik.isSubmitting}>
+                                <Floppy size={20} /> {formik.isSubmitting ? 'Saving...' : 'Save'}
+                            </button>
+                            <button className="btn btn-secondary" onClick={() => navigate(-1)}><XCircle size={20} /> Cancel</button>
+                        </div>
                     </form>
                 </div>
             </div>
