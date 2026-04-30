@@ -1,14 +1,15 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useFormik } from 'formik';
 import * as Yup from "yup";
-import apiClient from "../services/apiClient";
 import { type UserProfile } from '../types';
 import { Floppy, Pencil, XCircle } from 'react-bootstrap-icons';
-
+import { useAuth } from '../hooks/useAuth';
 
 export const ProfileView: React.FC<{ user: UserProfile; onEdit: () => void }> = ({ user, onEdit }) => {
+    console.log(user);
     return (
+
         <div className="container mt-4">
             <div className="card shadow-sm">
                 <div className="card-body">
@@ -26,14 +27,20 @@ export const ProfileView: React.FC<{ user: UserProfile; onEdit: () => void }> = 
     );
 };
 
-
-
 export const ProfileEdit: React.FC<{
-    user: UserProfile;
+    user: UserProfile | any;
     onSave: (user: UserProfile) => void;
     onCancel: () => void;
 }> = ({ user, onSave, onCancel }) => {
 
+    const { error, update, user: profile } = useAuth();
+
+    useEffect(() => {
+        if (error) {
+            console.log(error);
+            alert(error);
+        }
+    }, [error]);
 
     const validationSchema = Yup.object({
         name: Yup.string().min(3, 'Minimum 3 characters').required('Name is required'),
@@ -59,12 +66,11 @@ export const ProfileEdit: React.FC<{
                 if (values.password && values.password.trim() !== "") {
                     payload.password = values.password;
                 }
-
-                const response = await apiClient.put('/api/profile', JSON.stringify(payload));
-                console.log(response);
-
-                const updated = response.data;
-                onSave(updated);
+                console.log(payload);
+                update(payload);
+                if (!error) {
+                    onSave(profile);
+                }
             } catch (error) {
                 console.error('Update failed', error);
                 alert('Failed to update profile');
@@ -73,8 +79,6 @@ export const ProfileEdit: React.FC<{
             }
         },
     });
-
-
 
     return (
         <div className="container mt-4">
@@ -112,7 +116,6 @@ export const ProfileEdit: React.FC<{
                                 <div className="invalid-feedback">{formik.errors.email}</div>
                             )}
                         </div>
-
 
                         <div className="mb-3">
                             <label className="form-label">Password (Optional)</label>

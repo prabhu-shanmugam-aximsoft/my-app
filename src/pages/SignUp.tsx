@@ -1,11 +1,21 @@
 
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import apiClient from "../services/apiClient";
-import axios from 'axios';
 import { type SignupForm } from '../types';
+import { useUser } from '../hooks/useUser';
+import { useEffect } from 'react';
+
 
 export default function Signup() {
+
+    const { create, error } = useUser();
+
+    useEffect(() => {
+        if (error) {
+            console.log(error);
+            alert(error);
+        }
+    }, [error]);
 
     const formik = useFormik<SignupForm>({
         initialValues: {
@@ -36,23 +46,17 @@ export default function Signup() {
         onSubmit: async (values, { setSubmitting }) => {
             try {
                 const { confirmPassword, ...apiPayload } = values;
-                const response = await apiClient.post("/api/signup", apiPayload);
-                console.log("Success:", response);
-
+                create(apiPayload);
                 alert('Signup successful');
-                window.location.href = "/signin";
-            } catch (err) {
-                console.error(err);
-                if (axios.isAxiosError(err)) {
-                    // TypeScript now knows this is an AxiosError
-                    console.error(err.response?.status); // e.g., 404
-                    console.error(err.response?.data);   // Server error body
-                    alert(err?.response?.data?.message);
-                } else {
-                    console.error('An unexpected error occurred:', err);
-                    alert('Failed to Delete User');
+                if (!error) {
+                    window.location.href = "/signin";
                 }
-                alert('Signup failed');
+                else {
+                    alert(error);
+                }
+            } catch (err) {
+                console.error(err);               
+                alert(err);
             } finally {
                 setSubmitting(false);
             }

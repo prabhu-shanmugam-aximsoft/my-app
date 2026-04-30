@@ -15,4 +15,11 @@ apiClient.interceptors.request.use((config) => {
   return config;
 });
 
+// Add response interceptor
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => Promise.reject(error.response?.data || error.message)
+);
+
+
 export default apiClient;

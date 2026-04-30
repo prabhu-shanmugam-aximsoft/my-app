@@ -1,16 +1,18 @@
-import {useEffect, useState } from "react";
-import {  useNavigate } from "react-router";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 import { useTitle } from "../context/TitleProvider";
+import { useAuth } from '../hooks/useAuth';
 
 // Navbar Component
 export const AppHeader: React.FC = () => {
 
   const navigate = useNavigate();
-
   const { title } = useTitle();
+  const { logout } = useAuth();
 
   const handleLogout = () => {
-    localStorage.clear();
+    //localStorage.clear();
+    logout();
     navigate('/signin');
   };
 

@@ -1,21 +1,18 @@
-import { Navigate, useLocation } from 'react-router';
+import { Navigate } from 'react-router';
 import type { JSX } from 'react';
+import { useAuth } from '../hooks/useAuth';
 
 interface ProtectedRouteProps {
   children: JSX.Element;
 }
 
-const ProtectedRoute = ({ children} : ProtectedRouteProps) => {
-  const token = localStorage.getItem('accessToken'); // Retrieve your token
-  const location = useLocation();
-
-  if (!token) {
-    // Redirect to login if token is missing
-    // Use 'state' to save the current location so you can redirect back after login
-    return <Navigate to="/signin" state={{ from: location }} replace />;
-  } 
-
-  return children; // Render protected content if token exists
+const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
+  const { isAuthenticated } = useAuth();
+  console.log("isAuthenticated:" + isAuthenticated);
+  if (!isAuthenticated) {
+    return <Navigate to="/signin" />;
+  }
+  return children; 
 };
 
 export default ProtectedRoute

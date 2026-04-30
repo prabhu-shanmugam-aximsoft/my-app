@@ -1,47 +1,39 @@
 
 import { useEffect, useState } from 'react';
-import apiClient from "../services/apiClient";
 import { type User } from '../types';
 import { useTitle } from '../context/TitleProvider';
 import { useNavigate } from "react-router";
-import axios from 'axios';
 import { Trash3, Pencil, Eye } from 'react-bootstrap-icons';
+import { useUser } from '../hooks/useUser';
 
 export default function UsersPage() {
-    const [users, setUsers] = useState<User[]>([]);
+
     const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
-    const [loading, setLoading] = useState(true);
 
     const [search, setSearch] = useState('');
     const [roleFilter, setRoleFilter] = useState('All');
 
     const navigate = useNavigate();
 
-
     const { setTitle } = useTitle();
 
     useEffect(() => { setTitle("User Management"); }, [setTitle]);
 
-    useEffect(() => {
-        const fetchUsers = async () => {
-            try {
-                const response = await apiClient.get(`/api/users/`);
-                console.log(response);
-                setUsers(response.data);
-                setFilteredUsers(response.data);
-            } catch (err) {
-                console.error('Failed to fetch users', err);
-            } finally {
-                setLoading(false);
-            }
-        };
+    const { data, loading, fetchAll, remove } = useUser();
 
-        fetchUsers();
+
+    useEffect(() => {
+        fetchAll();
     }, []);
 
+    useEffect(() => {
+        console.log(data);
+        setFilteredUsers(data);
+    }, [data]);
+
 
     useEffect(() => {
-        let result = users;
+        let result = data;
 
         if (search) {
             result = result.filter((u) =>
@@ -55,35 +47,19 @@ export default function UsersPage() {
         }
 
         setFilteredUsers(result);
-    }, [search, roleFilter, users]);
+    }, [search, roleFilter, data]);
 
     if (loading) {
         return <div className="text-center mt-5">Loading users...</div>;
     }
 
-    async function handleDelete(id: number) {
+    function handleDelete(id: number) {
         const confirmDelete = window.confirm('Delete this user?');
         if (!confirmDelete) return;
-
-        try {
-            const response = await apiClient.delete(`/api/users/${id}`);
-            console.log(response)
-
-            setUsers((prev) => prev.filter((u) => u.id !== id));
-            setFilteredUsers((prev) => prev.filter((u) => u.id !== id));
-        } catch (err) {
-            if (axios.isAxiosError(err)) {                
-                console.error(err.response?.status);
-                console.error(err.response?.data); 
-                alert(err?.response?.data?.message);
-            } else {
-                console.error('An unexpected error occurred:', err);
-                alert('Failed to Delete User');
-            }
-        }
+        remove(id);
     }
 
-    const uniqueRoles = ['All', ...Array.from(new Set(users.map((u) => u.role)))];
+    const uniqueRoles = ['All', 'admin', 'user'];
 
     return (
         <div className="container mt-4">
@@ -93,21 +69,14 @@ export default function UsersPage() {
 
                     <div className="row mb-3">
                         <div className="col-md-6">
-                            <input
-                                type="text"
-                                className="form-control"
-                                placeholder="Search by name or email"
-                                value={search}
-                                onChange={(e) => setSearch(e.target.value)}
+                            <input type="text" className="form-control" value={search}
+                                placeholder="Search by name or email" onChange={(e) => setSearch(e.target.value)}
                             />
                         </div>
 
                         <div className="col-md-4">
-                            <select
-                                className="form-select"
-                                value={roleFilter}
-                                onChange={(e) => setRoleFilter(e.target.value)}
-                            >
+                            <select className="form-select" value={roleFilter}
+                                onChange={(e) => setRoleFilter(e.target.value)} >
                                 {uniqueRoles.map((role) => (
                                     <option key={role} value={role}>
                                         {role}
@@ -144,6 +113,7 @@ export default function UsersPage() {
                 </div>
             </div>
         </div>
+
     );
 };
 

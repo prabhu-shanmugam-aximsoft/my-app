@@ -1,13 +1,13 @@
 
 import { useEffect, useState } from 'react';
-import apiClient from "../services/apiClient";
 import { type User } from '../types';
 import { useTitle } from '../context/TitleProvider';
 import { ShieldFill, People, Person, Envelope } from 'react-bootstrap-icons';
+import { useContact } from '../hooks/useContact';
+import { useUser } from '../hooks/useUser';
 
 export default function HomePage() {
 
-    const [loading, setLoading] = useState(true);
     const [totalUsers, setTotalUser] = useState(0);
     const [totalAdminUsers, setTotalAdminUser] = useState(0);
     const [totalNormalUsers, setTotalNormalUser] = useState(0);
@@ -15,6 +15,9 @@ export default function HomePage() {
     const { setTitle } = useTitle();
 
     useEffect(() => { setTitle("Dashboard"); }, [setTitle]);
+
+    const { data: contactData, fetchAll: fetchAllContacts, error: userError, loading } = useContact();
+    const { data: UserData, fetchAll: fetchAllUsers, error: contactError } = useUser();
 
 
     const [data, setData] = useState<User | null>(null);
@@ -28,31 +31,27 @@ export default function HomePage() {
     }, []);
 
     useEffect(() => {
-        const fetchUsers = async () => {
-            try {
-                const response = await apiClient.get(`/api/users/`);
-                console.log(response);
-
-                let result = response.data;
-
-                setTotalUser(result.length);
-                setTotalAdminUser(result.filter((u: User) => u.role === 'admin').length);
-                setTotalNormalUser(result.filter((u: User) => u.role === 'user').length);
-
-                const response1 = await apiClient.get('api/contact');
-                let result1 = response1.data;
-                setTotalContact(result1.length)
-
-            } catch (err) {
-                console.error('Failed to fetch users', err);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchUsers();
+        fetchAllContacts();
+        fetchAllUsers()
     }, []);
 
+    useEffect(() => {
+        setTotalUser(UserData.length);
+        setTotalAdminUser(UserData.filter((u: User) => u.role === 'admin').length);
+        setTotalNormalUser(UserData.filter((u: User) => u.role === 'user').length);
+        setTotalContact(contactData.length);
+    }, [contactData, UserData]);
+
+    useEffect(() => {
+        if (userError) {
+            console.log(userError);
+            alert(userError);
+        }
+        if (contactError) {
+            console.log(contactError);
+            alert(contactError);
+        }
+    }, [contactError, userError]);
 
     if (loading) {
         return <div className="text-center mt-5">Loading ...</div>;

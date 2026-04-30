@@ -1,15 +1,30 @@
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import apiClient from "../services/apiClient";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { type LoginFormValues } from '../types';
-import axios from 'axios';
+
+import { useAuth } from '../hooks/useAuth';
 
 export default function SignIn() {
     const [apiError, setApiError] = useState<string>("");
+    const { error, login, isAuthenticated, clearAuthError } = useAuth();
 
     const navigate = useNavigate();
+
+    // Auto-redirect on successful login
+    useEffect(() => {
+        if (isAuthenticated) {
+            navigate("/home");
+        }
+    }, [isAuthenticated, navigate]);
+
+    useEffect(() => {
+        if (error) {
+            console.log(error);
+            setApiError(error);
+        }
+    }, [error]);
 
     const initialValues: LoginFormValues = {
         email: "",
@@ -23,37 +38,9 @@ export default function SignIn() {
 
     const handleSubmit = async (values: LoginFormValues, { setSubmitting }: any) => {
         setApiError("");
-
-        try {
-            const response = await apiClient.post("/api/login", values);
-            console.log("Success:", response);
-
-            // Example: store token
-            localStorage.setItem("accessToken", response.data.token);
-            localStorage.setItem("userrole", response.data.role);
-
-            try {
-                const response = await apiClient.get('/api/profile');
-                localStorage.setItem("currentuser", JSON.stringify(response.data))
-            } catch (error) {
-                console.error('Failed to fetch profile', error);
-            }
-
-            window.location.href = "/home";
-
-        } catch (error) {
-            if (axios.isAxiosError(error)) {
-                if (error?.response) {
-                    setApiError(error.response.data.message || "Login failed");
-                }
-            }
-            else {
-                setApiError("Network error. Try again.");
-            }
-
-        } finally {
-            setSubmitting(false);
-        }
+        clearAuthError();
+        login(values);
+        setSubmitting(false);
     };
 
     return (
@@ -89,7 +76,7 @@ export default function SignIn() {
                             </div>
 
                             <button type="submit" className="btn btn-primary w-49" disabled={isSubmitting}  >
-                                {isSubmitting ? "Logging in..." : "Login"}
+                                {isSubmitting ? 'Logging in...' : 'Login'}
                             </button>&nbsp;
                             <button type="button" className="btn btn-info w-49" onClick={() => navigate(`/signup`)}>SignUp</button>
                         </Form>

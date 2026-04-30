@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@reduxjs/toolkit": "^2.11.2",
     "axios": "^1.15.2",
     "bootstrap": "^5.3.8",
     "formik": "^2.4.9",
@@ -17,7 +18,10 @@
     "react-bootstrap": "^2.10.10",
     "react-bootstrap-icons": "^1.11.6",
     "react-dom": "^19.2.5",
+    "react-redux": "^9.2.0",
     "react-router": "^7.14.2",
+    "redux": "^5.0.1",
+    "redux-saga": "^1.4.2",
     "sweetalert": "^2.1.2",
     "yup": "^1.7.1"
   },
@@ -26,11 +30,13 @@
     "@types/node": "^24.12.2",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
+    "@types/redux-mock-store": "^1.5.0",
     "@vitejs/plugin-react": "^6.0.1",
     "eslint": "^10.2.1",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.5.0",
+    "redux-mock-store": "^1.5.5",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.58.2",
     "vite": "^8.0.10"

@@ -1,19 +1,18 @@
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-
 import { useParams, useNavigate } from 'react-router';
 import { useEffect, useState } from 'react';
 import { type User } from '../types';
-import apiClient from "../services/apiClient";
 import { useTitle } from '../context/TitleProvider';
-import axios from 'axios';
 import { Floppy, XCircle } from 'react-bootstrap-icons';
+import { useUser } from '../hooks/useUser';
 
 export default function UserEdit() {
     const { id } = useParams();
     const navigate = useNavigate();
 
     const [initialValues, setInitialValues] = useState<User | null>(null);
+    const { selectedItem, fetchOne, update, error } = useUser();
 
     const { setTitle } = useTitle();
 
@@ -21,16 +20,22 @@ export default function UserEdit() {
         setTitle("User Management");
     }, [setTitle]);
 
+    useEffect(() => {
+        fetchOne(id || '');
+    }, []);
+
 
     useEffect(() => {
-        const fetchUser = async () => {
-            const response = await apiClient.get(`/api/users/${id}`);
-            console.log(response);
-            setInitialValues(response.data);
-        };
+        console.log(selectedItem);
+        setInitialValues(selectedItem);
+    }, [selectedItem]);
 
-        if (id) fetchUser();
-    }, [id]);
+    useEffect(() => {
+        if (error) {
+            console.log(error);
+            alert(error);
+        }
+    }, [error]);
 
     const formik = useFormik<User>({
         enableReinitialize: true,
@@ -42,21 +47,13 @@ export default function UserEdit() {
         }),
         onSubmit: async (values, { setSubmitting }) => {
             try {
-                console.log("formvalue:" + JSON.stringify(values));
-                await apiClient.put(`/api/users/${id}`, JSON.stringify(values));
-
-                navigate('/users');
+                console.log("formvalue:" + JSON.stringify(values));               
+                update(id || '', values);
+                if (!error) {
+                    navigate('/users');
+                }
             } catch (err) {
-
-                if (axios.isAxiosError(err)) {
-                    if (err?.response) {
-
-                        alert(err?.response?.data?.message);
-                    }
-                }
-                else {
-                    alert('Failed to update');
-                }
+                alert('Failed to update');
             } finally {
                 setSubmitting(false);
             }

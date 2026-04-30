@@ -17,9 +17,7 @@ const LayoutContent: React.FC = () => {
                 <AppHeader />
               </div>
               <div className="row">
-                
-                  <Outlet />
-               
+                <Outlet />
               </div>
             </div>
           </div>

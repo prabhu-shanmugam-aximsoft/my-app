@@ -1,15 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router';
-import apiClient from "../services/apiClient";
 import { useTitle } from '../context/TitleProvider';
 import { Trash3, Eye } from 'react-bootstrap-icons';
-import { type Contact } from '../types';
-
-
+import { useContact } from '../hooks/useContact';
 
 export default function ContactPage() {
-    const [data, setData] = useState<Contact[]>([]);
-    const [loading, setLoading] = useState(true);
 
     const { setTitle } = useTitle();
 
@@ -17,37 +12,26 @@ export default function ContactPage() {
 
     useEffect(() => { setTitle("Contact Management"); }, [setTitle]);
 
-    useEffect(() => {
-        const fetchMessages = async () => {
-            try {
-                const response = await apiClient.get('api/contact');
-                setData(response.data);
-            } catch (err) {
-                console.error('Failed to fetch messages', err);
-            } finally {
-                setLoading(false);
-            }
-        };
+    const { data, loading, fetchAll, remove, error } = useContact();
 
-        fetchMessages();
+
+
+    useEffect(() => {
+        fetchAll();
     }, []);
+
+    useEffect(() => {
+        if (error) {
+            console.log(error);
+            alert(error);
+        }
+    }, [error]);
 
 
     async function handleDelete(id: number) {
-        const confirmDelete = window.confirm('Are you sure you want to delete this message?');
+        const confirmDelete = window.confirm('Delete this user?');
         if (!confirmDelete) return;
-
-        try {
-            const response = await apiClient.delete(`api/contact/${id}`);
-            console.log(response)
-
-            //if (!res.ok) throw new Error('Delete failed');
-
-            setData((prev) => prev.filter((m) => m.id !== id));
-        } catch (err) {
-            console.error(err);
-            alert('Failed to delete');
-        }
+        remove(id);
     }
 
     if (loading) {
