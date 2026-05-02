@@ -3,3 +3,4 @@ export * from './Contact';
 export * from './LoginFormValues';
 export * from './UserProfile';
 export * from './SignupForm';
+export * from './StatCardProps';

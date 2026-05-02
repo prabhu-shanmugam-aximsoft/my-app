@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import { useTitle } from '../context/TitleProvider';
 import { Trash3, Eye } from 'react-bootstrap-icons';
 import { useContact } from '../hooks/useContact';

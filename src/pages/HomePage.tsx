@@ -5,6 +5,7 @@ import { useTitle } from '../context/TitleProvider';
 import { ShieldFill, People, Person, Envelope } from 'react-bootstrap-icons';
 import { useContact } from '../hooks/useContact';
 import { useUser } from '../hooks/useUser';
+import { StatCard } from '../components/StatCard';
 
 export default function HomePage() {
 
@@ -16,30 +17,21 @@ export default function HomePage() {
 
     useEffect(() => { setTitle("Dashboard"); }, [setTitle]);
 
-    const { data: contactData, fetchAll: fetchAllContacts, error: userError, loading } = useContact();
-    const { data: UserData, fetchAll: fetchAllUsers, error: contactError } = useUser();
-
-
-    const [data, setData] = useState<User | null>(null);
-
-    useEffect(() => {
-        const savedData = localStorage.getItem("currentuser");
-        if (savedData) {
-            const parsedData: User = JSON.parse(savedData);
-            setData(parsedData);
-        }
-    }, []);
-
-    useEffect(() => {
+     useEffect(() => {
         fetchAllContacts();
         fetchAllUsers()
     }, []);
 
+    const { data: contactData, fetchAll: fetchAllContacts, error: userError, loading } = useContact();
+    const { data: UserData, fetchAll: fetchAllUsers, error: contactError, selectedItem } = useUser();
+
+   
+
     useEffect(() => {
-        setTotalUser(UserData.length);
-        setTotalAdminUser(UserData.filter((u: User) => u.role === 'admin').length);
-        setTotalNormalUser(UserData.filter((u: User) => u.role === 'user').length);
-        setTotalContact(contactData.length);
+        setTotalUser(UserData?.length ?? 0);
+        if (UserData) setTotalAdminUser(UserData?.filter((u: User) => u.role === 'admin')?.length ?? 0);
+        if (UserData) setTotalNormalUser(UserData?.filter((u: User) => u.role === 'user')?.length ?? 0);
+        if (contactData) setTotalContact(contactData?.length ?? 0);
     }, [contactData, UserData]);
 
     useEffect(() => {
@@ -61,45 +53,31 @@ export default function HomePage() {
         <div className="container mt-4">
             <div className="card shadow-sm">
                 <div className="card-body">
-                    <h4 className="mb-3">Welcome, {data?.name}</h4>
+                    <h4 className="mb-3">Welcome, {selectedItem?.name}</h4>
                     <div className="row">
-                        <div className="col-md-4 mb-3">
-                            <div className="card shadow-sm h-100">
-                                <div className="card-body">
-                                    <h5 className="card-title"><People className="text-primary" size={20} />&nbsp;Total Users</h5>
-                                    <p className="card-text mb-1"><strong>{totalUsers}</strong> </p>
-                                    <p className="card-text"></p>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col-md-4 mb-3">
-                            <div className="card shadow-sm h-100">
+                         <StatCard
+                            title="Total Users"
+                            value={totalUsers}
+                            icon={<People className="text-primary" size={20} />}
+                        />
 
-                                <div className="card-body">
-                                    <h5 className="card-title"><ShieldFill className="text-danger" size={20} />&nbsp;Admin Users</h5>
-                                    <p className="card-text mb-1"><strong>{totalAdminUsers}</strong> </p>
-                                    <p className="card-text"></p>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col-md-4 mb-3">
-                            <div className="card shadow-sm h-100">
-                                <div className="card-body">
-                                    <h5 className="card-title"><Person className="text-info" size={20} />&nbsp;Regular Users</h5>
-                                    <p className="card-text mb-1"><strong>{totalNormalUsers}</strong> </p>
-                                    <p className="card-text"></p>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col-md-4 mb-3">
-                            <div className="card shadow-sm h-100">
-                                <div className="card-body">
-                                    <h5 className="card-title"><Envelope className="text-success" size={20} />&nbsp;Contact Messages</h5>
-                                    <p className="card-text mb-1"><strong>{totalContact}</strong> </p>
-                                    <p className="card-text"></p>
-                                </div>
-                            </div>
-                        </div>
+                        <StatCard
+                            title="Admin Users"
+                            value={totalAdminUsers}
+                            icon={<ShieldFill className="text-danger" size={20} />}
+                        />
+
+                        <StatCard
+                            title="Regular Users"
+                            value={totalNormalUsers}
+                            icon={<Person className="text-info" size={20} />}
+                        />
+
+                        <StatCard
+                            title="Contact Messages"
+                            value={totalContact}
+                            icon={<Envelope className="text-success" size={20} />}
+                        />
                     </div>
                 </div>
             </div>

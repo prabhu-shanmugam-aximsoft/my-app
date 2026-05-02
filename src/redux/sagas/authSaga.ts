@@ -34,10 +34,13 @@ function* handleLogin(action: any): any {
         const { token, role } = response.data;
         localStorage.setItem("accessToken", token);
         localStorage.setItem("userrole", role);
-        // Fetch user profile after successful login
+
         const profileResponse = yield call(apiClient.get, '/api/profile');
 
+        localStorage.setItem('currentuser', JSON.stringify(profileResponse.data));
+
         yield put(
+
             loginSuccess({ token, user: profileResponse.data, role })
         );
     } catch (error: any) {
@@ -51,12 +54,13 @@ function* handleLogin(action: any): any {
 // Logout Saga
 function* handleLogout(): any {
     try {
-        yield call(apiClient.post, '/api/logout');
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('userrole');
+        localStorage.removeItem('currentuser');
         yield put(logoutSuccess());
     } catch (error: any) {
         const errorMessage = error.response?.data?.message || 'Logout failed';
         console.error('Logout error:', errorMessage);
-        // Still logout locally even if API call fails
         yield put(logoutSuccess());
     }
 }

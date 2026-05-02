@@ -32,9 +32,7 @@ const authSlice = createSlice({
       state.user = action.payload.user;
       state.isAuthenticated = true;
       state.error = null;
-      localStorage.setItem('accessToken', action.payload.token);
-      localStorage.setItem('userrole', action.payload.role);
-      localStorage.setItem('currentuser', JSON.stringify(action.payload.user));
+     
     },
     loginFailure: (state, action: PayloadAction<string>) => {
       state.loading = false;
@@ -51,10 +49,7 @@ const authSlice = createSlice({
       state.user = null;
       state.token = null;
       state.isAuthenticated = false;
-      state.error = null;
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('userrole');
-      localStorage.removeItem('currentuser');
+      state.error = null;     
     },
 
     // Fetch Profile

@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { type User } from '../types';
 import { useTitle } from '../context/TitleProvider';
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { Trash3, Pencil, Eye } from 'react-bootstrap-icons';
 import { useUser } from '../hooks/useUser';
 

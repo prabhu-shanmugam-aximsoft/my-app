@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft } from 'react-bootstrap-icons';
 import { useContact } from '../hooks/useContact';
 

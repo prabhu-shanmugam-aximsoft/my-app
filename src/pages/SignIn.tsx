@@ -1,13 +1,13 @@
-import { Formik, Form, Field, ErrorMessage } from "formik";
+import { Formik, Form, Field, ErrorMessage, type FormikHelpers } from "formik";
 import * as Yup from "yup";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { type LoginFormValues } from '../types';
 
 import { useAuth } from '../hooks/useAuth';
 
 export default function SignIn() {
-    const [apiError, setApiError] = useState<string>("");
+
     const { error, login, isAuthenticated, clearAuthError } = useAuth();
 
     const navigate = useNavigate();
@@ -15,16 +15,11 @@ export default function SignIn() {
     // Auto-redirect on successful login
     useEffect(() => {
         if (isAuthenticated) {
-            navigate("/home");
+            navigate("/home", { replace: true });
         }
     }, [isAuthenticated, navigate]);
 
-    useEffect(() => {
-        if (error) {
-            console.log(error);
-            setApiError(error);
-        }
-    }, [error]);
+
 
     const initialValues: LoginFormValues = {
         email: "",
@@ -36,25 +31,31 @@ export default function SignIn() {
         password: Yup.string().min(6, "Minimum 6 characters").required("Password is required"),
     });
 
-    const handleSubmit = async (values: LoginFormValues, { setSubmitting }: any) => {
-        setApiError("");
+    const handleSubmit = async (
+        values: LoginFormValues,
+        { setSubmitting }: FormikHelpers<LoginFormValues>
+    ) => {
         clearAuthError();
-        login(values);
-        setSubmitting(false);
+
+        try {
+            await login(values);
+        } finally {
+            setSubmitting(false);
+        }
     };
+
 
     return (
         <div className="container d-flex align-items-center justify-content-center vh-100">
             <div className="card p-4 shadow" style={{ width: "350px" }}>
                 <h3 className="text-center mb-3">Login</h3>
 
-                {apiError && <div className="alert alert-danger">{apiError}</div>}
+                {error && <div className="alert alert-danger">{error}</div>}
 
                 <Formik
                     initialValues={initialValues}
                     validationSchema={validationSchema}
-                    onSubmit={handleSubmit}
-                >
+                    onSubmit={handleSubmit}                >
                     {({ touched, errors, isSubmitting }) => (
                         <Form>
                             {/* Email */}

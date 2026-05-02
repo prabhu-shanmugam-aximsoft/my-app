@@ -1,5 +1,5 @@
 
-import { useParams, useNavigate } from 'react-router';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useTitle } from '../context/TitleProvider';
 import { ArrowLeft } from 'react-bootstrap-icons';
